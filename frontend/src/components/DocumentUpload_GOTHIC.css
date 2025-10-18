@@ -1,0 +1,1152 @@
+/* Gothic Medical Bible Theme - Documents Page */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&family=Poppins:wght@300;400;500;600;700&family=Creepster&family=Nosifer&family=UnifrakturMaguntia&display=swap');
+
+/* Base Styles */
+.documents-page {
+  min-height: 100vh;
+  background: #000000;
+  color: #e0e0e0;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Particle Canvas Background */
+.particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Floating Medical Organs - Spooky */
+.floating-organs {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.organ {
+  position: absolute;
+  font-size: 3.5rem;
+  opacity: 0.12;
+  filter: grayscale(20%) drop-shadow(0 0 20px rgba(255, 0, 0, 0.3));
+  animation: organFloat 25s infinite ease-in-out;
+}
+
+.organ-1 {
+  top: 8%;
+  left: 5%;
+  animation-delay: 0s;
+  font-size: 4rem;
+}
+
+.organ-2 {
+  top: 25%;
+  left: 85%;
+  animation-delay: 3s;
+  font-size: 3rem;
+}
+
+.organ-3 {
+  top: 60%;
+  left: 10%;
+  animation-delay: 6s;
+  font-size: 3.5rem;
+}
+
+.organ-4 {
+  top: 75%;
+  left: 80%;
+  animation-delay: 2s;
+  font-size: 3rem;
+}
+
+.organ-5 {
+  top: 40%;
+  left: 92%;
+  animation-delay: 4s;
+  font-size: 2.5rem;
+}
+
+.organ-6 {
+  top: 15%;
+  left: 70%;
+  animation-delay: 5s;
+  font-size: 3.5rem;
+}
+
+.organ-7 {
+  top: 85%;
+  left: 20%;
+  animation-delay: 7s;
+  font-size: 3rem;
+}
+
+.organ-8 {
+  top: 50%;
+  left: 3%;
+  animation-delay: 1s;
+  font-size: 4rem;
+}
+
+@keyframes organFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 0.12;
+  }
+  25% {
+    transform: translateY(-50px) rotate(5deg) scale(1.1);
+    opacity: 0.18;
+  }
+  50% {
+    transform: translateY(-100px) rotate(-5deg) scale(0.9);
+    opacity: 0.15;
+  }
+  75% {
+    transform: translateY(-50px) rotate(3deg) scale(1.05);
+    opacity: 0.2;
+  }
+}
+
+/* Header */
+.documents-header {
+  position: relative;
+  z-index: 100;
+  padding: 1.5rem 3rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: 'Cinzel', serif;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-name {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.logout-btn {
+  padding: 0.6rem 1.5rem;
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid rgba(255, 82, 82, 0.4);
+  color: #ff5252;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 82, 82, 0.2);
+  border-color: #ff5252;
+  box-shadow: 0 0 25px rgba(255, 82, 82, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Main Container */
+.documents-container {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem 2rem;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Medical Bible Section */
+.medical-bible-section {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  transform: scale(0.85);
+}
+
+/* Bible Header */
+.bible-header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.bible-main-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00d4ff 0%, #00e5ff 50%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 0.8rem 0;
+  letter-spacing: 3px;
+  text-shadow: 0 0 40px rgba(0, 212, 255, 0.6);
+  filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
+}
+
+.bible-subtitle-text {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+/* Gothic Medical Book */
+.medical-bible {
+  position: relative;
+  perspective: 2500px;
+  animation: bookFloatMain 8s ease-in-out infinite;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes bookFloatMain {
+  0%, 100% {
+    transform: translateY(0) rotateX(0deg);
+  }
+  50% {
+    transform: translateY(-25px) rotateX(3deg);
+  }
+}
+
+.book-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.5) 0%, rgba(0, 255, 255, 0.3) 30%, transparent 70%);
+  filter: blur(60px);
+  animation: glowPulseIntense 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes glowPulseIntense {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+.book-wrapper {
+  position: relative;
+  display: flex;
+  transform-style: preserve-3d;
+  transform: rotateY(-8deg);
+}
+
+/* Book Spine - 3D Effect */
+.book-spine {
+  position: relative;
+  width: 50px;
+  height: 550px;
+  background: linear-gradient(to right, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  border-left: 3px solid rgba(0, 212, 255, 0.4);
+  border-right: 3px solid rgba(0, 0, 0, 0.8);
+  box-shadow: 
+    inset -5px 0 15px rgba(0, 0, 0, 0.8),
+    inset 5px 0 15px rgba(0, 212, 255, 0.2),
+    -10px 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  transform: translateZ(-30px) rotateY(-5deg);
+}
+
+.spine-text {
+  writing-mode: vertical-rl;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+.spine-decoration {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* Open Book Pages */
+.book-pages {
+  display: flex;
+  width: 750px;
+  height: 550px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 4px solid rgba(0, 212, 255, 0.5);
+  border-radius: 8px;
+  box-shadow: 
+    0 20px 80px rgba(0, 0, 0, 0.8),
+    inset 0 0 60px rgba(0, 212, 255, 0.15),
+    0 0 40px rgba(0, 212, 255, 0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Individual Pages */
+.page {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(to right, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.98));
+  overflow: hidden;
+}
+
+.left-page {
+  border-right: 2px solid rgba(0, 212, 255, 0.3);
+  background: 
+    linear-gradient(to right, rgba(0, 212, 255, 0.03) 0%, transparent 10%),
+    linear-gradient(to right, rgba(26, 26, 46, 1), rgba(22, 33, 62, 0.98));
+}
+
+.right-page {
+  background: 
+    linear-gradient(to left, rgba(0, 212, 255, 0.03) 0%, transparent 10%),
+    linear-gradient(to left, rgba(26, 26, 46, 1), rgba(22, 33, 62, 0.98));
+  cursor: default; /* Ensure default cursor for the page */
+}
+
+.page-content {
+  padding: 2.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
+  cursor: default; /* Ensure default cursor, child elements can override */
+}
+
+/* Hide scrollbar for page content but keep functionality */
+.page-content::-webkit-scrollbar {
+  width: 0px;
+  display: none;
+}
+
+.page-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.page-shadow {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3) 0%, transparent 20%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.left-page .page-shadow {
+  left: 0;
+}
+
+.right-page .page-shadow {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+/* Left Page Decorations */
+.skull-decoration {
+  font-size: 6rem;
+  opacity: 0.4;
+  filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+  animation: skullGlow 4s ease-in-out infinite;
+  margin-bottom: 2rem;
+}
+
+@keyframes skullGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 50px rgba(0, 212, 255, 0.6));
+    transform: scale(1.05);
+  }
+}
+
+.ornamental-border {
+  width: 80%;
+  min-height: 100px;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+  position: relative;
+  margin: 1rem 0;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.motivational-quote {
+  font-family: 'Creepster', 'IM Fell English', serif;
+  font-size: 1.6rem;
+  line-height: 1.4;
+  color: rgba(0, 212, 255, 0.9);
+  font-style: normal;
+  max-width: 100%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1.5px;
+  font-weight: 400;
+}
+
+.ornamental-border::before,
+.ornamental-border::after {
+  content: '✠';
+  position: absolute;
+  font-size: 1.5rem;
+  color: rgba(0, 212, 255, 0.6);
+}
+
+.ornamental-border::before {
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ornamental-border::after {
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.page-text {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.latin-text {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.8rem;
+  font-style: italic;
+  color: rgba(0, 212, 255, 0.8);
+  margin: 1rem 0;
+  letter-spacing: 2px;
+}
+
+.decorative-line {
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(0, 212, 255, 0.6), transparent);
+  margin: 1.5rem auto;
+}
+
+.page-number {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+/* Upload Zone Inside Book */
+.upload-zone-book {
+  width: 100%;
+  max-width: 480px;
+  padding: 2.5rem 2rem;
+  background: rgba(0, 212, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 3px dashed rgba(0, 212, 255, 0.4);
+  border-radius: 15px;
+  text-align: center;
+  cursor: pointer !important; /* Force pointer cursor */
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  z-index: 999 !important; /* Force highest z-index */
+  user-select: none; /* Prevent text selection */
+  isolation: isolate; /* Create new stacking context */
+}
+
+.upload-zone-book *:not(input):not(label) {
+  cursor: inherit !important; /* Inherit cursor from parent (pointer) */
+  pointer-events: none; /* Don't block interactions - let label handle */
+}
+
+.upload-zone-book::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.15), transparent);
+  transition: left 0.6s ease;
+  pointer-events: none; /* Don't block clicks */
+}
+
+.upload-zone-book:hover::before {
+  left: 100%;
+}
+
+.upload-zone-book:hover {
+  border-color: rgba(0, 212, 255, 0.8);
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 
+    0 0 40px rgba(0, 212, 255, 0.4),
+    inset 0 0 30px rgba(0, 212, 255, 0.15);
+  transform: translateY(-5px);
+}
+
+.upload-zone-book.drag-active {
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: 
+    0 0 50px rgba(0, 212, 255, 0.6),
+    inset 0 0 40px rgba(0, 212, 255, 0.3);
+  animation: borderPulseBook 1s ease-in-out infinite;
+}
+
+@keyframes borderPulseBook {
+  0%, 100% {
+    border-color: rgba(0, 212, 255, 0.6);
+  }
+  50% {
+    border-color: rgba(0, 212, 255, 1);
+  }
+}
+
+.upload-icon-book {
+  font-size: 3rem;
+  margin-bottom: 0.8rem;
+  pointer-events: none; /* Allow clicks to pass through */
+  user-select: none;
+}
+
+.upload-title-book {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #00d4ff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 1px;
+  pointer-events: none; /* Allow clicks to pass through */
+  user-select: none;
+}
+
+.upload-subtitle-book {
+  font-family: 'IM Fell English', serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 0.3rem 0;
+  font-style: italic;
+  pointer-events: none; /* Allow clicks to pass through */
+  user-select: none;
+}
+
+.upload-hint-book {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 0.5rem 0;
+  pointer-events: none; /* Allow clicks to pass through */
+  user-select: none;
+}
+
+.upload-browse {
+  font-size: 0.9rem;
+  color: rgba(0, 212, 255, 0.8);
+  margin: 0;
+  pointer-events: none; /* Allow clicks to pass through */
+  user-select: none;
+  font-weight: 600;
+}
+
+/* Invisible Upload Button - Positioned over upload zone */
+.invisible-upload-button {
+  position: fixed !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="4" fill="%2300d4ff"/><path d="M10 2h8v8h8v8h-8v8h-8v-8H2v-8h8V2z" fill="none" stroke="%2300d4ff" stroke-width="2"/></svg>') 14 14, pointer !important;
+  z-index: 2147483647 !important;
+  outline: none !important;
+  pointer-events: auto !important;
+  display: block !important;
+}
+
+.invisible-upload-button:focus {
+  outline: 2px solid rgba(0, 212, 255, 0.5);
+  outline-offset: -4px;
+}
+
+/* Selected Files Inside Book */
+.selected-files-book {
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.files-title-book {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00d4ff;
+  margin: 0 0 0.8rem 0;
+  letter-spacing: 1px;
+}
+
+.files-list-book {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.file-item-book {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.file-item-book:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+}
+
+.file-icon-book {
+  font-size: 1.3rem;
+}
+
+.file-info-book {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.file-name-book {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.file-size-book {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.remove-file-btn-book {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  color: #ff5252;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.remove-file-btn-book:hover {
+  background: rgba(255, 82, 82, 0.2);
+  border-color: #ff5252;
+  box-shadow: 0 0 15px rgba(255, 82, 82, 0.4);
+  transform: rotate(90deg);
+}
+
+/* Book Shadow */
+.book-shadow-bottom {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 30px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.8) 0%, transparent 70%);
+  filter: blur(15px);
+}
+
+/* Messages */
+.message {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+}
+
+.error-message {
+  background: rgba(255, 82, 82, 0.15);
+  border: 1px solid rgba(255, 82, 82, 0.4);
+  color: #ff5252;
+  box-shadow: 0 0 20px rgba(255, 82, 82, 0.2);
+}
+
+.success-message {
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #4caf50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+}
+
+/* Upload Submit Button */
+.upload-submit-btn {
+  width: 100%;
+  max-width: 500px;
+  padding: 1.3rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  color: #000000;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 
+    0 6px 30px rgba(0, 212, 255, 0.5),
+    inset 0 2px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transition: left 0.6s ease;
+}
+
+.upload-submit-btn:hover::before {
+  left: 100%;
+}
+
+.upload-submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 40px rgba(0, 212, 255, 0.7),
+    inset 0 2px 2px rgba(255, 255, 255, 0.3);
+}
+
+.upload-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  border-top-color: #000000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 0.8rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer */
+.documents-footer {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+}
+
+/* Scrollbar Styling */
+.selected-files-book::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selected-files-book::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.selected-files-book::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.4);
+  border-radius: 10px;
+}
+
+.selected-files-book::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .book-pages {
+    width: 900px;
+    height: 550px;
+  }
+
+  .book-spine {
+    height: 550px;
+  }
+}
+
+@media (max-width: 992px) {
+  .book-pages {
+    width: 800px;
+    height: 500px;
+  }
+
+  .book-spine {
+    height: 500px;
+    width: 50px;
+  }
+
+  .bible-main-title {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .documents-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .brand-logo {
+    font-size: 1.5rem;
+  }
+
+  .book-wrapper {
+    transform: rotateY(0deg);
+  }
+
+  .book-pages {
+    width: 90vw;
+    max-width: 600px;
+    height: 450px;
+    flex-direction: column;
+  }
+
+  .book-spine {
+    display: none;
+  }
+
+  .left-page {
+    display: none;
+  }
+
+  .right-page {
+    width: 100%;
+  }
+
+  .bible-main-title {
+    font-size: 2.2rem;
+  }
+
+  .organ {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .documents-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .book-pages {
+    height: 400px;
+  }
+
+  .bible-main-title {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+  }
+
+  .bible-subtitle-text {
+    font-size: 1rem;
+  }
+
+  .upload-zone-book {
+    padding: 1.5rem 1rem;
+  }
+
+  .upload-submit-btn {
+    font-size: 1rem;
+    padding: 1.1rem 2rem;
+  }
+
+  .organ {
+    font-size: 2rem;
+  }
+}
+
+/* Existing Documents Banner */
+.existing-docs-banner {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.banner-content {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(0, 0, 0, 0.8));
+  border: 2px solid rgba(139, 0, 0, 0.5);
+  border-radius: 15px;
+  padding: 1.8rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 
+    0 0 30px rgba(139, 0, 0, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
+.banner-icon {
+  font-size: 3rem;
+  animation: pulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.banner-text {
+  flex: 1;
+}
+
+.banner-text h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #00d4ff;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.banner-text p {
+  color: #e0e0e0;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.doc-list-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.doc-badge {
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #00d4ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.doc-badge:hover {
+  background: rgba(0, 212, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.use-existing-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #8b0000, #5a0000);
+  color: #ffffff;
+  border: 2px solid rgba(139, 0, 0, 0.8);
+  border-radius: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 
+    0 4px 15px rgba(139, 0, 0, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.use-existing-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.use-existing-btn:hover {
+  background: linear-gradient(135deg, #a00000, #700000);
+  border-color: rgba(200, 0, 0, 1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 8px 25px rgba(139, 0, 0, 0.6),
+    0 0 40px rgba(139, 0, 0, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.use-existing-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.use-existing-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .banner-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .banner-icon {
+    font-size: 2.5rem;
+  }
+
+  .use-existing-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.9rem 1.5rem;
+  }
+
+  .doc-list-compact {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .existing-docs-banner {
+    margin: 1.5rem auto;
+  }
+
+  .banner-text h3 {
+    font-size: 1.3rem;
+  }
+
+  .banner-text p {
+    font-size: 0.9rem;
+  }
+
+  .doc-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+}

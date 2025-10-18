@@ -5,8 +5,9 @@ FastAPI backend for the medical chatbot with RAG capabilities.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import health, chat
+from app.api.routes import health, chat, auth, documents
 from app.config import settings
+from app.core.database import connect_to_mongodb, close_mongodb_connection
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -32,6 +33,18 @@ app.include_router(
     health.router,
     prefix="/api/v1",
     tags=["Health"]
+)
+
+app.include_router(
+    auth.router,
+    prefix="/api/v1",
+    tags=["Authentication"]
+)
+
+app.include_router(
+    documents.router,
+    prefix="/api/v1",
+    tags=["Documents"]
 )
 
 app.include_router(
@@ -71,8 +84,15 @@ async def startup_event():
     print("="*60)
     print(f"📝 API Docs: http://localhost:8000/docs")
     print(f"🔍 Health Check: http://localhost:8000/api/v1/health")
-    print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
+    print(f"� Auth Endpoints: http://localhost:8000/api/v1/auth/")
+    print(f"📄 Documents: http://localhost:8000/api/v1/documents/")
+    print(f"�💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
     print("="*60 + "\n")
+    
+    # Connect to MongoDB
+    print("🔌 Connecting to MongoDB...")
+    await connect_to_mongodb()
+    print("✅ MongoDB connected!\n")
     
     # Initialize chatbot service on startup
     print("🔧 Initializing chatbot service...")
@@ -88,6 +108,8 @@ async def shutdown_event():
     Clean up resources here.
     """
     print("\n👋 Shutting down Medical Chatbot API...")
+    await close_mongodb_connection()
+    print("✅ MongoDB connection closed")
 
 
 if __name__ == "__main__":

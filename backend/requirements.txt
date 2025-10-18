@@ -1,29 +1,48 @@
 # Medical Chatbot Backend - Requirements
+# Successfully tested on Python 3.13
 
 # FastAPI and Server
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
+fastapi==0.119.0
+uvicorn[standard]==0.37.0
 pydantic-settings==2.7.1
 python-dotenv==1.0.0
+python-multipart==0.0.20
+
+# MongoDB
+pymongo==4.15.3
+motor==3.7.1
+
+# Authentication
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.1
+email-validator==2.3.0
 
 # LangChain Ecosystem
 langchain==0.3.26
 langchain-community==0.3.26
-langchain-pinecone==0.2.8
+langchain-pinecone==0.2.6
 langchain-openai==0.3.24
 
 # Embeddings and NLP
 sentence-transformers==4.1.0
 
-# Vector Database
-pinecone==5.6.2
+# Vector Database - Using pinecone (compatible with latest langchain-pinecone)
+pinecone>=5.0.0
 
-# Google Gemini
-google-generativeai==0.8.5
-langchain-google-genai==2.1.12
+# Google Gemini - Compatible versions
+google-generativeai==0.8.3
+langchain-google-genai==2.0.5
 
 # PDF Processing
 pypdf==5.6.1
+
+# Document Processing
+python-docx==1.2.0
+openpyxl==3.1.2
+
+# File Handling
+aiofiles==25.1.0
 
 # Utilities
 httpx==0.28.1

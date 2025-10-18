@@ -56,11 +56,42 @@ Answer:"""
         Returns:
             Tuple of (list of documents, formatted context string)
         """
+        print(f"   🔎 Retrieving documents for question: '{question}'")
+        
         # Retrieve relevant documents
-        docs = self.retriever.invoke(question)
+        try:
+            docs = self.retriever.invoke(question)
+            print(f"   ✅ Retriever returned {len(docs)} documents")
+        except Exception as e:
+            print(f"   ❌ Error during retrieval: {e}")
+            import traceback
+            traceback.print_exc()
+            docs = []
+        
+        if not docs:
+            print(f"   ⚠️ WARNING: No documents retrieved!")
+            return [], ""
+        
+        # Log what was retrieved
+        print(f"   📄 Retrieved {len(docs)} documents")
+        for i, doc in enumerate(docs, 1):
+            metadata = doc.metadata
+            source = metadata.get('source', 'Unknown')
+            filename = metadata.get('filename', 'Unknown')
+            user_id = metadata.get('user_id', 'Unknown')
+            content_length = len(doc.page_content)
+            print(f"      {i}. {filename} (user: {user_id})")
+            print(f"         Source: {source}")
+            print(f"         Content length: {content_length} chars")
+            print(f"         Preview: {doc.page_content[:150]}...")
         
         # Combine document contents into context
         context = "\n\n".join([doc.page_content for doc in docs])
+        
+        print(f"   📝 Total context length: {len(context)} characters")
+        
+        if len(context) == 0:
+            print(f"   ⚠️ WARNING: Context is empty even though {len(docs)} docs were retrieved!")
         
         return docs, context
     

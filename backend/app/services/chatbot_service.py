@@ -4,6 +4,7 @@ Business logic layer for chatbot operations.
 """
 
 from typing import Optional
+from langchain_pinecone import PineconeVectorStore
 from app.core import (
     PineconeManager,
     LLMConfig,
@@ -86,12 +87,13 @@ class ChatbotService:
         self._initialized = True
         print("✅ Medical Chatbot Service initialized successfully!\n")
     
-    def query(self, question: str, top_k: int = 3, return_sources: bool = False):
+    def query(self, question: str, user_id: str = None, top_k: int = 3, return_sources: bool = False):
         """
         Query the chatbot with a question.
         
         Args:
             question: User's question
+            user_id: User ID for filtering documents (multi-tenant support)
             top_k: Number of documents to retrieve
             return_sources: Whether to return source documents
             
@@ -101,13 +103,38 @@ class ChatbotService:
         if not self._initialized:
             self.initialize()
         
-        # Update retriever's k value if different from default
-        if top_k != settings.top_k_results:
-            self._query_engine.retriever = self._vector_store.as_retriever(
-                search_kwargs={"k": top_k}
-            )
+        # Determine which namespace to use
+        if user_id:
+            # Authenticated user - use their personal namespace
+            namespace = f"user_{user_id}"
+            print(f"🔍 Querying with user namespace: {namespace}")
+        else:
+            # Free user - use the default namespace (empty string = Medical_book.pdf data)
+            namespace = ""  # Default namespace contains 5,859 vectors from Medical_book.pdf
+            print(f"🔍 Querying with free user namespace: (default)")
         
-        result = self._query_engine.query(
+        # Create namespace-specific vector store
+        namespace_vector_store = PineconeVectorStore.from_existing_index(
+            index_name=self._pinecone_manager.index_name,
+            embedding=self._embedding_model,
+            namespace=namespace
+        )
+        
+        # Create namespace-specific retriever
+        retriever = namespace_vector_store.as_retriever(
+            search_kwargs={"k": top_k}
+        )
+        
+        print(f"   📚 Searching top {top_k} documents in namespace: {namespace}")
+        
+        # Create temporary query engine for this namespace
+        from app.core import QueryEngine
+        namespace_query_engine = QueryEngine(
+            llm_model=self._llm_model,
+            retriever=retriever
+        )
+        
+        result = namespace_query_engine.query(
             question=question,
             top_k=top_k,
             return_sources=return_sources

@@ -16,6 +16,12 @@ ENV/
 *.env
 !.env.example
 
+# User uploads
+uploads/
+*.pdf
+*.docx
+*.xlsx
+
 # IDE
 .vscode/
 .idea/
