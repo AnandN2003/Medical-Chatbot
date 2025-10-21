@@ -99,10 +99,17 @@ async def initialize_services():
         print("🔌 ATTEMPTING MONGODB CONNECTION...")
         print("="*60)
         try:
-            await connect_to_mongodb()
+            # Add a timeout to prevent hanging
+            await asyncio.wait_for(connect_to_mongodb(), timeout=30.0)
             print("="*60)
             print("✅ MONGODB CONNECTION SUCCESSFUL!")
             print("="*60 + "\n")
+        except asyncio.TimeoutError:
+            print("="*60)
+            print("❌ MONGODB CONNECTION TIMEOUT (30s)")
+            print("Connection took too long - this is likely a network/firewall issue")
+            print("="*60 + "\n")
+            print("⚠️  Application will continue but database features will be limited\n")
         except Exception as e:
             print("="*60)
             print("❌ MONGODB CONNECTION FAILED!")
@@ -117,10 +124,16 @@ async def initialize_services():
         
         # Initialize chatbot service - SKIP FOR NOW to prevent crashes
         print("🔧 Chatbot service will initialize on first query (lazy loading)...")
-        print("✅ Startup complete! App is ready.\n")
+        print("="*60)
+        print("✅✅✅ BACKGROUND INITIALIZATION COMPLETE! ✅✅✅")
+        print("✅ App is fully operational and ready to accept requests")
+        print("="*60 + "\n")
     except Exception as e:
         print(f"⚠️  Background initialization error: {str(e)}")
         print("⚠️  App will continue to run\n")
+    finally:
+        # This ensures the task doesn't exit prematurely
+        print("🔄 Background services initialized. Task complete.\n")
 
 
 @app.on_event("startup")

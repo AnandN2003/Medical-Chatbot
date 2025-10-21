@@ -101,6 +101,10 @@ async def connect_to_mongodb():
         connection_attempts.append(f"{error_msg}: {type(e).__name__} - {str(e)[:200]}")
         if mongodb.client:
             mongodb.client.close()
+    finally:
+        # Always reset the connecting flag if not connected
+        if not _mongodb_connected:
+            _mongodb_connecting = False
     
     # Strategy 2: Disable SSL verification completely
     try:
