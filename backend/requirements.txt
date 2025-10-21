@@ -1,5 +1,5 @@
 # Medical Chatbot Backend - Requirements
-# Successfully tested on Python 3.13
+# Compatible with Python 3.11.x (Required for MongoDB SSL compatibility)
 
 # FastAPI and Server
 fastapi==0.119.0

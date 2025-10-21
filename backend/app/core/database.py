@@ -24,12 +24,18 @@ async def connect_to_mongodb():
     """Establish connection to MongoDB."""
     try:
         logger.info("Connecting to MongoDB...")
+        logger.info(f"MongoDB URI: {settings.mongodb_uri[:30]}...")  # Log partial URI for debugging
         
-        # Add TLS parameters to fix SSL handshake issues
+        # MongoDB connection with SSL/TLS parameters optimized for cloud deployment
         mongodb.client = AsyncIOMotorClient(
             settings.mongodb_uri,
             tls=True,
-            tlsAllowInvalidCertificates=True  # Bypass SSL certificate validation
+            tlsAllowInvalidCertificates=True,  # Required for some cloud providers
+            serverSelectionTimeoutMS=5000,     # Reduce timeout for faster failure
+            connectTimeoutMS=10000,
+            socketTimeoutMS=10000,
+            maxPoolSize=10,
+            minPoolSize=1
         )
         mongodb.db = mongodb.client[settings.mongodb_db_name]
         
