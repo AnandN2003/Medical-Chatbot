@@ -6,14 +6,13 @@ services:
   - type: web
     name: medical-chatbot-backend
     runtime: python
+    pythonVersion: 3.11.9
     region: oregon  # Choose: oregon, frankfurt, singapore, etc.
     plan: free  # Change to 'starter' for production
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11
       - key: MONGODB_URI
         sync: false  # Set in Render dashboard
       - key: MONGODB_DB_NAME
@@ -58,5 +57,5 @@ services:
         # value: https://yourdomain.tech,https://www.yourdomain.tech
       - key: TOP_K_RESULTS
         value: 3
-    healthCheckPath: /health
+    healthCheckPath: /api/v1/health
     autoDeploy: true  # Auto-deploy on git push
