@@ -62,7 +62,16 @@ async def connect_to_mongodb():
         await mongodb.client.admin.command('ping')
         print("✅ STRATEGY 1 SUCCESSFUL!")
         print("="*60)
-        await create_indexes()
+        print("📊 Creating database indexes...")
+        try:
+            await create_indexes()
+            print("✅ Database indexes created!")
+        except Exception as idx_error:
+            print(f"⚠️  Index creation warning: {str(idx_error)[:200]}")
+            print("   Database will work without indexes")
+        print("="*60)
+        print("✅✅✅ MONGODB FULLY CONNECTED AND READY! ✅✅✅")
+        print("="*60)
         return
         
     except Exception as e:
@@ -92,7 +101,16 @@ async def connect_to_mongodb():
         await mongodb.client.admin.command('ping')
         print("✅ STRATEGY 2 SUCCESSFUL!")
         print("="*60)
-        await create_indexes()
+        print("📊 Creating database indexes...")
+        try:
+            await create_indexes()
+            print("✅ Database indexes created!")
+        except Exception as idx_error:
+            print(f"⚠️  Index creation warning: {str(idx_error)[:200]}")
+            print("   Database will work without indexes")
+        print("="*60)
+        print("✅✅✅ MONGODB FULLY CONNECTED AND READY! ✅✅✅")
+        print("="*60)
         return
         
     except Exception as e:
@@ -128,7 +146,16 @@ async def connect_to_mongodb():
         await mongodb.client.admin.command('ping')
         print("✅ STRATEGY 3 SUCCESSFUL!")
         print("="*60)
-        await create_indexes()
+        print("📊 Creating database indexes...")
+        try:
+            await create_indexes()
+            print("✅ Database indexes created!")
+        except Exception as idx_error:
+            print(f"⚠️  Index creation warning: {str(idx_error)[:200]}")
+            print("   Database will work without indexes")
+        print("="*60)
+        print("✅✅✅ MONGODB FULLY CONNECTED AND READY! ✅✅✅")
+        print("="*60)
         return
         
     except Exception as e:
@@ -162,28 +189,37 @@ async def close_mongodb_connection():
 async def create_indexes():
     """Create database indexes for better performance."""
     try:
+        print("   Creating users collection indexes...")
         # Users collection indexes
         await mongodb.db.users.create_index("email", unique=True)
         await mongodb.db.users.create_index("username", unique=True)
         await mongodb.db.users.create_index([("created_at", -1)])
+        print("   ✅ Users indexes created")
         
+        print("   Creating documents collection indexes...")
         # Documents collection indexes
         await mongodb.db.documents.create_index([("user_id", 1), ("upload_date", -1)])
         await mongodb.db.documents.create_index([("user_id", 1), ("is_active", 1)])
         await mongodb.db.documents.create_index([("processing_status", 1)])
+        print("   ✅ Documents indexes created")
         
+        print("   Creating chat sessions collection indexes...")
         # Chat sessions collection indexes
         await mongodb.db.chat_sessions.create_index([("user_id", 1), ("created_at", -1)])
         await mongodb.db.chat_sessions.create_index([("user_id", 1), ("is_active", 1)])
+        print("   ✅ Chat sessions indexes created")
         
+        print("   Creating messages collection indexes...")
         # Messages collection indexes
         await mongodb.db.messages.create_index([("session_id", 1), ("timestamp", 1)])
         await mongodb.db.messages.create_index([("user_id", 1), ("timestamp", -1)])
+        print("   ✅ Messages indexes created")
         
-        print("Database indexes created successfully")
+        print("   ✅ All database indexes created successfully")
         
     except Exception as e:
-        print(f"Error creating indexes: {e}")
+        print(f"   ❌ Error creating indexes: {type(e).__name__}: {str(e)[:300]}")
+        raise  # Re-raise to be caught by the wrapper
 
 
 def get_database():
