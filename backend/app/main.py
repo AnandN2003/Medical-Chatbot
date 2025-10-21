@@ -20,15 +20,24 @@ app = FastAPI(
 )
 
 # Configure CORS
+# Hardcoded CORS origins for deployment - override environment variable
+CORS_ORIGINS = [
+    "https://medical-chatbot-ecru.vercel.app",
+    "https://medical-chatbot-scru.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000"
+]
+
 print("="*60)
 print("🌐 CORS CONFIGURATION")
 print(f"CORS_ORIGINS environment variable: {settings.cors_origins}")
-print(f"CORS allowed origins list: {settings.cors_origins_list}")
+print(f"CORS allowed origins list from settings: {settings.cors_origins_list}")
+print(f"HARDCODED CORS origins being used: {CORS_ORIGINS}")
 print("="*60)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=CORS_ORIGINS,  # Use hardcoded list
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
