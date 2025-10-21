@@ -57,10 +57,17 @@ class Settings(BaseSettings):
     data_path: str = str(Path(__file__).parent.parent.parent / "data")
     
     # CORS Settings
-    cors_origins: list = ["http://localhost:3000", "http://localhost:5173"]
+    cors_origins: str = "http://localhost:3000,http://localhost:5173"
     
     # Query Settings
     top_k_results: int = 3
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        """Get CORS origins as a list."""
+        if isinstance(self.cors_origins, str):
+            return [origin.strip() for origin in self.cors_origins.split(",")]
+        return self.cors_origins
     
     class Config:
         env_file = str(Path(__file__).parent.parent / ".env")
