@@ -36,23 +36,36 @@ app.include_router(
     tags=["Health"]
 )
 
-app.include_router(
-    auth.router,
-    prefix="/api/v1",
-    tags=["Authentication"]
-)
+# Temporarily comment out problematic routes for debugging
+try:
+    app.include_router(
+        auth.router,
+        prefix="/api/v1",
+        tags=["Authentication"]
+    )
+    print("✅ Auth router loaded")
+except Exception as e:
+    print(f"⚠️  Auth router failed to load: {e}")
 
-app.include_router(
-    documents.router,
-    prefix="/api/v1",
-    tags=["Documents"]
-)
+try:
+    app.include_router(
+        documents.router,
+        prefix="/api/v1",
+        tags=["Documents"]
+    )
+    print("✅ Documents router loaded")
+except Exception as e:
+    print(f"⚠️  Documents router failed to load: {e}")
 
-app.include_router(
-    chat.router,
-    prefix="/api/v1/chat",
-    tags=["Chat"]
-)
+try:
+    app.include_router(
+        chat.router,
+        prefix="/api/v1/chat",
+        tags=["Chat"]
+    )
+    print("✅ Chat router loaded")
+except Exception as e:
+    print(f"⚠️  Chat router failed to load: {e}")
 
 
 @app.get("/")

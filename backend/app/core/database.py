@@ -21,9 +21,26 @@ class MongoDB:
 # Global MongoDB instance
 mongodb = MongoDB()
 
+# Connection state flag
+_mongodb_connected = False
+_mongodb_connecting = False
+
 
 async def connect_to_mongodb():
     """Establish connection to MongoDB with multiple fallback strategies."""
+    global _mongodb_connected, _mongodb_connecting
+    
+    # Check if already connected
+    if _mongodb_connected:
+        print("ℹ️  MongoDB already connected, skipping...")
+        return
+    
+    # Check if connection is in progress
+    if _mongodb_connecting:
+        print("ℹ️  MongoDB connection already in progress, skipping...")
+        return
+    
+    _mongodb_connecting = True
     connection_attempts = []
     
     print("="*60)
@@ -72,6 +89,8 @@ async def connect_to_mongodb():
         print("="*60)
         print("✅✅✅ MONGODB FULLY CONNECTED AND READY! ✅✅✅")
         print("="*60)
+        _mongodb_connected = True
+        _mongodb_connecting = False
         return
         
     except Exception as e:
@@ -168,6 +187,7 @@ async def connect_to_mongodb():
             mongodb.client.close()
     
     # All strategies failed
+    _mongodb_connecting = False  # Reset flag so it can be retried later
     print("="*60)
     print("❌❌❌ ALL MONGODB CONNECTION STRATEGIES FAILED ❌❌❌")
     print("="*60)
