@@ -1,7 +1,9 @@
 // API Configuration
 // Centralized API URL management
 
-const API_URL = import.meta.env.VITE_API_URL || "https://medical-chatbot-backend-wzll.onrender.com";
+// Hardcoded for production deployment - change this when backend URL changes
+const API_URL = "https://medical-chatbot-backend-wzll.onrender.com";
+// For local development, use: const API_URL = "http://localhost:8000";
 
 export const config = {
   apiUrl: API_URL,
