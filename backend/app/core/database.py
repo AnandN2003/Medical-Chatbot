@@ -121,7 +121,9 @@ async def connect_to_mongodb():
     # All strategies failed
     full_error = "\n".join(connection_attempts)
     logger.error(f"❌ All MongoDB connection strategies failed:\n{full_error}")
-    raise ConnectionFailure(f"Failed to connect to MongoDB after 3 attempts: {full_error}")
+    # Don't raise - just log the error and continue
+    # raise ConnectionFailure(f"Failed to connect to MongoDB after 3 attempts: {full_error}")
+    logger.warning("⚠️  MongoDB will not be available. App will continue without database features.")
 
 
 async def close_mongodb_connection():

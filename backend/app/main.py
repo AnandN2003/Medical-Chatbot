@@ -78,19 +78,24 @@ async def initialize_services():
     """
     Initialize services in the background after the app starts.
     This prevents blocking the port binding.
+    Wrapped in try-except to never crash the app.
     """
-    # Connect to MongoDB with retry logic
-    print("🔌 Connecting to MongoDB in background...")
     try:
-        await connect_to_mongodb()
-        print("✅ MongoDB connected!\n")
+        # Connect to MongoDB with retry logic
+        print("🔌 Connecting to MongoDB in background...")
+        try:
+            await connect_to_mongodb()
+            print("✅ MongoDB connected!\n")
+        except Exception as e:
+            print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
+            print("⚠️  Application will continue but database features will be limited\n")
+        
+        # Initialize chatbot service - SKIP FOR NOW to prevent crashes
+        print("🔧 Chatbot service will initialize on first query (lazy loading)...")
+        print("✅ Startup complete! App is ready.\n")
     except Exception as e:
-        print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
-        print("⚠️  Application will continue but database features will be limited\n")
-    
-    # Initialize chatbot service - SKIP FOR NOW to prevent crashes
-    print("🔧 Chatbot service will initialize on first query (lazy loading)...")
-    print("✅ Startup complete! App is ready.\n")
+        print(f"⚠️  Background initialization error: {str(e)}")
+        print("⚠️  App will continue to run\n")
 
 
 @app.on_event("startup")
@@ -99,20 +104,25 @@ async def startup_event():
     Startup event handler - FAST startup to bind port quickly.
     Heavy initialization happens in background.
     """
-    print("\n" + "="*60)
-    print(f"🚀 Starting {settings.app_name} v{settings.app_version}")
-    print("="*60)
-    print(f"📝 API Docs: http://localhost:8000/docs")
-    print(f"🔍 Health Check: http://localhost:8000/api/v1/health")
-    print(f"🔐 Auth Endpoints: http://localhost:8000/api/v1/auth/")
-    print(f"📄 Documents: http://localhost:8000/api/v1/documents/")
-    print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
-    print("="*60)
-    print("⚡ App ready! Port is now open.")
-    print("🔄 Background services initializing...\n")
-    
-    # Run initialization in background to avoid blocking port binding
-    asyncio.create_task(initialize_services())
+    try:
+        print("\n" + "="*60)
+        print(f"🚀 Starting {settings.app_name} v{settings.app_version}")
+        print("="*60)
+        print(f"📝 API Docs: http://localhost:8000/docs")
+        print(f"🔍 Health Check: http://localhost:8000/api/v1/health")
+        print(f"🔐 Auth Endpoints: http://localhost:8000/api/v1/auth/")
+        print(f"📄 Documents: http://localhost:8000/api/v1/documents/")
+        print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
+        print("="*60)
+        print("⚡ App ready! Port is now open.")
+        print("🔄 Background services will initialize on demand...\n")
+        
+        # Don't run background initialization - it's causing shutdowns
+        # Services will initialize on first use (lazy loading)
+        # asyncio.create_task(initialize_services())
+    except Exception as e:
+        print(f"⚠️  Startup error: {str(e)}")
+        # Don't raise - let app continue
 
 
 @app.on_event("shutdown")
