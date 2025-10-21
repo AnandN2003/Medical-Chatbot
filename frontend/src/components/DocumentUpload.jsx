@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './DocumentUpload.css';
+import { config } from '../config';
 
 const DocumentUpload = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const DocumentUpload = () => {
   const fetchDocuments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/v1/documents/', {
+      const response = await fetch(config.endpoints.getDocuments, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -53,7 +54,7 @@ const DocumentUpload = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/v1/documents/stats/summary', {
+      const response = await fetch(config.endpoints.statsSummary, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -98,7 +99,7 @@ const DocumentUpload = () => {
       formData.append('tags', tags);
 
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/v1/documents/upload', {
+      const response = await fetch(config.endpoints.uploadDocuments, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -139,7 +140,7 @@ const DocumentUpload = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/v1/documents/${documentId}`, {
+      const response = await fetch(config.endpoints.deleteDocument(documentId), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

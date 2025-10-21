@@ -22,6 +22,7 @@ export const config = {
     getDocuments: `${API_URL}/api/v1/documents/`,
     checkExisting: `${API_URL}/api/v1/documents/check-existing`,
     deleteDocument: (id) => `${API_URL}/api/v1/documents/${id}`,
+    statsSummary: `${API_URL}/api/v1/documents/stats/summary`,
     
     // Health endpoint
     health: `${API_URL}/api/v1/health`,

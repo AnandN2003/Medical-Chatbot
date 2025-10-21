@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './DocumentUpload_GOTHIC.css';
+import { config } from '../config';
 
 const DocumentUpload = () => {
   const navigate = useNavigate();
@@ -162,7 +163,7 @@ const DocumentUpload = () => {
     console.log('🔑 Using token:', token ? 'Token exists' : 'No token');
     
     try {
-      const response = await fetch('http://localhost:8000/api/v1/documents/check-existing', {
+      const response = await fetch(config.endpoints.checkExisting, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -300,7 +301,7 @@ const DocumentUpload = () => {
       console.log('🔑 Token from localStorage:', token ? 'EXISTS' : 'NULL');
       console.log('🔑 Token value:', token);
       
-      const response = await fetch('http://localhost:8000/api/v1/documents/upload', {
+      const response = await fetch(config.endpoints.uploadDocuments, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

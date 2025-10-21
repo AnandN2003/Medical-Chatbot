@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './ChatPage.css';
+import { config } from '../config';
 
 const ChatPage = ({ isAuthenticated = false }) => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const ChatPage = ({ isAuthenticated = false }) => {
         return;
       }
 
-      const response = await fetch('http://localhost:8000/api/v1/documents/check-existing', {
+      const response = await fetch(config.endpoints.checkExisting, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -70,7 +71,7 @@ const ChatPage = ({ isAuthenticated = false }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
       
-      const response = await fetch('http://localhost:8000/api/v1/health', {
+      const response = await fetch(config.endpoints.health, {
         signal: controller.signal
       });
       
@@ -119,7 +120,7 @@ const ChatPage = ({ isAuthenticated = false }) => {
           return;
         }
         
-        const checkResponse = await fetch('http://localhost:8000/api/v1/documents/check-existing', {
+        const checkResponse = await fetch(config.endpoints.checkExisting, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -141,7 +142,7 @@ const ChatPage = ({ isAuthenticated = false }) => {
         }
       } else {
         // For free/unauthenticated users, check the default Medical_book.pdf via health
-        const healthResponse = await fetch('http://localhost:8000/api/v1/health', {
+        const healthResponse = await fetch(config.endpoints.health, {
           signal: AbortSignal.timeout(5000) // 5 second timeout
         });
         
@@ -204,7 +205,7 @@ const ChatPage = ({ isAuthenticated = false }) => {
         }
       }
       
-      const response = await fetch('http://localhost:8000/api/v1/chat/query', {
+      const response = await fetch(config.endpoints.chat, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({

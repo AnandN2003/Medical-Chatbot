@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AuthModal.css';
+import { config } from '../config';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     setLoginLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+      const response = await fetch(config.endpoints.login, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     setSignupLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/signup', {
+      const response = await fetch(config.endpoints.signup, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
