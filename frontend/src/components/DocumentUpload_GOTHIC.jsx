@@ -514,7 +514,7 @@ const DocumentUpload = () => {
                     <div className="skull-decoration">💀</div>
                     <div className="ornamental-border">
                       <p className="motivational-quote">
-                        Fuck your life to save others'
+                        Own your pain, heal the world
                       </p>
                     </div>
                     <div className="page-text">
