@@ -41,9 +41,9 @@ async def connect_to_mongodb():
             tlsCAFile=certifi.where(),
             tlsAllowInvalidCertificates=True,
             tlsAllowInvalidHostnames=True,
-            serverSelectionTimeoutMS=10000,
-            connectTimeoutMS=20000,
-            socketTimeoutMS=20000,
+            serverSelectionTimeoutMS=5000,  # Reduced timeout
+            connectTimeoutMS=5000,
+            socketTimeoutMS=5000,
             maxPoolSize=10,
             minPoolSize=1
         )
@@ -70,9 +70,9 @@ async def connect_to_mongodb():
             settings.mongodb_uri,
             tls=True,
             tlsInsecure=True,
-            serverSelectionTimeoutMS=10000,
-            connectTimeoutMS=20000,
-            socketTimeoutMS=20000
+            serverSelectionTimeoutMS=5000,  # Reduced timeout
+            connectTimeoutMS=5000,
+            socketTimeoutMS=5000
         )
         mongodb.db = mongodb.client[settings.mongodb_db_name]
         
@@ -101,8 +101,8 @@ async def connect_to_mongodb():
         
         mongodb.client = AsyncIOMotorClient(
             uri,
-            serverSelectionTimeoutMS=15000,
-            connectTimeoutMS=30000
+            serverSelectionTimeoutMS=5000,  # Reduced timeout
+            connectTimeoutMS=5000
         )
         mongodb.db = mongodb.client[settings.mongodb_db_name]
         

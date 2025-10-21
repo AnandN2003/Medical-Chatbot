@@ -3,11 +3,12 @@ Medical Chatbot API - Main Application
 FastAPI backend for the medical chatbot with RAG capabilities.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import health, chat, auth, documents
 from app.config import settings
 from app.core.database import connect_to_mongodb, close_mongodb_connection
+import asyncio
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -73,11 +74,35 @@ async def root():
     }
 
 
+async def initialize_services():
+    """
+    Initialize services in the background after the app starts.
+    This prevents blocking the port binding.
+    """
+    # Connect to MongoDB with retry logic
+    print("🔌 Connecting to MongoDB in background...")
+    try:
+        await connect_to_mongodb()
+        print("✅ MongoDB connected!\n")
+    except Exception as e:
+        print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
+        print("⚠️  Application will continue but database features will be limited\n")
+    
+    # Initialize chatbot service
+    print("🔧 Initializing chatbot service in background...")
+    try:
+        from app.services import chatbot_service
+        chatbot_service.initialize()
+        print("✅ Chatbot service ready!\n")
+    except Exception as e:
+        print(f"⚠️  Chatbot initialization warning: {str(e)[:100]}\n")
+
+
 @app.on_event("startup")
 async def startup_event():
     """
-    Startup event handler.
-    Run any initialization code here.
+    Startup event handler - FAST startup to bind port quickly.
+    Heavy initialization happens in background.
     """
     print("\n" + "="*60)
     print(f"🚀 Starting {settings.app_name} v{settings.app_version}")
@@ -87,26 +112,12 @@ async def startup_event():
     print(f"🔐 Auth Endpoints: http://localhost:8000/api/v1/auth/")
     print(f"📄 Documents: http://localhost:8000/api/v1/documents/")
     print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
-    print("="*60 + "\n")
+    print("="*60)
+    print("⚡ App ready! Port is now open.")
+    print("🔄 Background services initializing...\n")
     
-    # Connect to MongoDB with retry logic
-    print("🔌 Connecting to MongoDB...")
-    try:
-        await connect_to_mongodb()
-        print("✅ MongoDB connected!\n")
-    except Exception as e:
-        print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
-        print("⚠️  Application will start but database features will be limited\n")
-        # Don't raise - allow app to start even if MongoDB fails
-    
-    # Initialize chatbot service on startup
-    print("🔧 Initializing chatbot service...")
-    try:
-        from app.services import chatbot_service
-        chatbot_service.initialize()
-        print("✅ Chatbot service ready!\n")
-    except Exception as e:
-        print(f"⚠️  Chatbot initialization warning: {str(e)[:100]}\n")
+    # Run initialization in background to avoid blocking port binding
+    asyncio.create_task(initialize_services())
 
 
 @app.on_event("shutdown")
