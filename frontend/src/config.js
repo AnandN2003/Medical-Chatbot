@@ -1,7 +1,7 @@
 // API Configuration
 // Centralized API URL management
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || "https://medical-chatbot-backend-wzll.onrender.com";
 
 export const config = {
   apiUrl: API_URL,
@@ -22,7 +22,7 @@ export const config = {
     deleteDocument: (id) => `${API_URL}/api/v1/documents/${id}`,
     
     // Health endpoint
-    health: `${API_URL}/health`,
+    health: `${API_URL}/api/v1/health`,
   },
 };
 

@@ -21,11 +21,11 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://medical-chatbot-backend.onrender.com"
+    "VITE_API_URL": "https://medical-chatbot-backend-wzll.onrender.com"
   },
   "build": {
     "env": {
-      "VITE_API_URL": "https://medical-chatbot-backend.onrender.com"
+      "VITE_API_URL": "https://medical-chatbot-backend-wzll.onrender.com"
     }
   }
 }
