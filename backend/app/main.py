@@ -82,12 +82,24 @@ async def initialize_services():
     """
     try:
         # Connect to MongoDB with retry logic
-        print("🔌 Connecting to MongoDB in background...")
+        print("="*60)
+        print("🔌 ATTEMPTING MONGODB CONNECTION...")
+        print("="*60)
         try:
             await connect_to_mongodb()
-            print("✅ MongoDB connected!\n")
+            print("="*60)
+            print("✅ MONGODB CONNECTION SUCCESSFUL!")
+            print("="*60 + "\n")
         except Exception as e:
-            print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
+            print("="*60)
+            print("❌ MONGODB CONNECTION FAILED!")
+            print(f"Error Type: {type(e).__name__}")
+            print(f"Error Message: {str(e)[:500]}")
+            print("="*60)
+            import traceback
+            print("Full Traceback:")
+            print(traceback.format_exc())
+            print("="*60 + "\n")
             print("⚠️  Application will continue but database features will be limited\n")
         
         # Initialize chatbot service - SKIP FOR NOW to prevent crashes
@@ -115,13 +127,14 @@ async def startup_event():
         print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
         print("="*60)
         print("⚡ App ready! Port is now open.")
-        print("🔄 Background services will initialize on demand...\n")
+        print("🔄 Background services initializing...\n")
         
-        # Don't run background initialization - it's causing shutdowns
-        # Services will initialize on first use (lazy loading)
-        # asyncio.create_task(initialize_services())
+        # Run background initialization - with extensive error logging
+        asyncio.create_task(initialize_services())
     except Exception as e:
         print(f"⚠️  Startup error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
         # Don't raise - let app continue
 
 
