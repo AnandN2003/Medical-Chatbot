@@ -151,6 +151,9 @@ async def initialize_services():
         print("🔄 Background services initialized. Task complete.\n")
 
 
+# Store background task reference to prevent garbage collection
+_background_tasks = set()
+
 @app.on_event("startup")
 async def startup_event():
     """
@@ -170,8 +173,12 @@ async def startup_event():
         print("⚡ App ready! Port is now open.")
         print("🔄 Background services initializing...\n")
         
-        # Run background initialization - with extensive error logging
-        asyncio.create_task(initialize_services())
+        # Run background initialization - keep reference to prevent garbage collection
+        task = asyncio.create_task(initialize_services())
+        _background_tasks.add(task)
+        task.add_done_callback(_background_tasks.discard)
+        
+        print("✅ Background task created and running\n")
     except Exception as e:
         print(f"⚠️  Startup error: {str(e)}")
         import traceback
