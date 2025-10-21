@@ -88,14 +88,9 @@ async def initialize_services():
         print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
         print("⚠️  Application will continue but database features will be limited\n")
     
-    # Initialize chatbot service
-    print("🔧 Initializing chatbot service in background...")
-    try:
-        from app.services import chatbot_service
-        chatbot_service.initialize()
-        print("✅ Chatbot service ready!\n")
-    except Exception as e:
-        print(f"⚠️  Chatbot initialization warning: {str(e)[:100]}\n")
+    # Initialize chatbot service - SKIP FOR NOW to prevent crashes
+    print("🔧 Chatbot service will initialize on first query (lazy loading)...")
+    print("✅ Startup complete! App is ready.\n")
 
 
 @app.on_event("startup")

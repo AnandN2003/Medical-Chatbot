@@ -29,63 +29,81 @@ class ChatbotService:
         self._initialized = False
     
     def initialize(self):
-        """Initialize all chatbot components (lazy loading)."""
+        """Initialize all chatbot components (lazy loading with error handling)."""
         if self._initialized:
+            print("ℹ️  Chatbot service already initialized")
             return
         
-        print("\n🚀 Initializing Medical Chatbot Service...")
-        
-        # 1. Initialize Pinecone
-        self._pinecone_manager = PineconeManager(
-            api_key=settings.pinecone_api_key,
-            index_name=settings.pinecone_index_name
-        )
-        
-        # 2. Create or get index
-        dimension = get_embedding_dimension(settings.embedding_model)
-        self._pinecone_manager.create_index(
-            dimension=dimension,
-            metric=settings.pinecone_metric,
-            cloud=settings.pinecone_cloud,
-            region=settings.pinecone_region
-        )
-        
-        # 3. Initialize embedding model
-        self._embedding_model = get_embedding_model(settings.embedding_model)
-        
-        # 4. Check if we need to load documents
-        vector_count = self._pinecone_manager.get_vector_count()
-        documents = None
-        
-        if vector_count == 0:
-            print("⚠️ Vector store is empty. Loading documents...")
-            documents = process_documents(
-                settings.data_path,
-                chunk_size=settings.chunk_size,
-                chunk_overlap=settings.chunk_overlap
+        try:
+            print("\n🚀 Initializing Medical Chatbot Service...")
+            
+            # 1. Initialize Pinecone
+            print("   📍 Connecting to Pinecone...")
+            self._pinecone_manager = PineconeManager(
+                api_key=settings.pinecone_api_key,
+                index_name=settings.pinecone_index_name
             )
-        
-        # 5. Setup vector store
-        self._vector_store = self._pinecone_manager.setup_vector_store(
-            embedding=self._embedding_model,
-            documents=documents
-        )
-        
-        # 6. Initialize LLM
-        self._llm_model = LLMConfig.setup_gemini(
-            api_key=settings.gemini_api_key,
-            model_name=settings.gemini_model
-        )
-        
-        # 7. Create query engine
-        retriever = self._vector_store.as_retriever(search_kwargs={"k": settings.top_k_results})
-        self._query_engine = QueryEngine(
-            llm_model=self._llm_model,
-            retriever=retriever
-        )
-        
-        self._initialized = True
-        print("✅ Medical Chatbot Service initialized successfully!\n")
+            
+            # 2. Create or get index
+            print("   📊 Setting up Pinecone index...")
+            dimension = get_embedding_dimension(settings.embedding_model)
+            self._pinecone_manager.create_index(
+                dimension=dimension,
+                metric=settings.pinecone_metric,
+                cloud=settings.pinecone_cloud,
+                region=settings.pinecone_region
+            )
+            
+            # 3. Initialize embedding model
+            print("   🤖 Loading embedding model (this may take 1-2 minutes)...")
+            self._embedding_model = get_embedding_model(settings.embedding_model)
+            print("   ✅ Embedding model loaded")
+            
+            # 4. Check if we need to load documents (skip for now - let user do this)
+            print("   🔍 Checking vector store...")
+            try:
+                vector_count = self._pinecone_manager.get_vector_count()
+                print(f"   ✅ Vector store contains {vector_count} vectors")
+            except Exception as e:
+                print(f"   ⚠️  Could not check vector count: {str(e)[:100]}")
+                vector_count = 0
+            
+            # 5. Setup vector store (without documents - lazy loading)
+            print("   🔗 Setting up vector store...")
+            self._vector_store = self._pinecone_manager.setup_vector_store(
+                embedding=self._embedding_model,
+                documents=None  # Don't load documents on startup
+            )
+            
+            # 6. Initialize LLM
+            print("   🧠 Initializing Gemini LLM...")
+            self._llm_model = LLMConfig.setup_gemini(
+                api_key=settings.gemini_api_key,
+                model_name=settings.gemini_model
+            )
+            
+            # 7. Create query engine
+            print("   ⚙️  Creating query engine...")
+            retriever = self._vector_store.as_retriever(search_kwargs={"k": settings.top_k_results})
+            self._query_engine = QueryEngine(
+                llm_model=self._llm_model,
+                retriever=retriever
+            )
+            
+            self._initialized = True
+            print("✅ Medical Chatbot Service initialized successfully!\n")
+            
+        except Exception as e:
+            error_msg = f"❌ Error initializing chatbot service: {str(e)}"
+            print(error_msg)
+            print(f"   Error type: {type(e).__name__}")
+            # Don't set initialized = True on error
+            self._initialized = False
+            # Log full traceback for debugging
+            import traceback
+            print(traceback.format_exc())
+            # Don't re-raise - just log the error
+            print("⚠️  Chatbot will retry initialization on first query\n")
     
     def query(self, question: str, user_id: str = None, top_k: int = 3, return_sources: bool = False):
         """
