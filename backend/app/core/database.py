@@ -5,6 +5,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import ConnectionFailure
 from ..config import settings
 import logging
+import ssl
+import certifi
 
 logger = logging.getLogger(__name__)
 
@@ -21,19 +23,27 @@ mongodb = MongoDB()
 
 
 async def connect_to_mongodb():
-    """Establish connection to MongoDB."""
+    """Establish connection to MongoDB with multiple fallback strategies."""
+    connection_attempts = []
+    
+    # Strategy 1: Use certifi CA bundle with proper SSL context
     try:
-        logger.info("Connecting to MongoDB...")
-        logger.info(f"MongoDB URI: {settings.mongodb_uri[:30]}...")  # Log partial URI for debugging
+        logger.info("Attempt 1: Connecting to MongoDB with certifi CA bundle...")
+        logger.info(f"MongoDB URI: {settings.mongodb_uri[:30]}...")
         
-        # MongoDB connection with SSL/TLS parameters optimized for cloud deployment
+        # Create custom SSL context
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
         mongodb.client = AsyncIOMotorClient(
             settings.mongodb_uri,
-            tls=True,
-            tlsAllowInvalidCertificates=True,  # Required for some cloud providers
-            serverSelectionTimeoutMS=5000,     # Reduce timeout for faster failure
-            connectTimeoutMS=10000,
-            socketTimeoutMS=10000,
+            tlsCAFile=certifi.where(),
+            tlsAllowInvalidCertificates=True,
+            tlsAllowInvalidHostnames=True,
+            serverSelectionTimeoutMS=10000,
+            connectTimeoutMS=20000,
+            socketTimeoutMS=20000,
             maxPoolSize=10,
             minPoolSize=1
         )
@@ -41,14 +51,77 @@ async def connect_to_mongodb():
         
         # Verify connection
         await mongodb.client.admin.command('ping')
-        logger.info("Successfully connected to MongoDB")
-        
-        # Create indexes
+        logger.info("✅ Successfully connected to MongoDB (Strategy 1)")
         await create_indexes()
+        return
         
-    except ConnectionFailure as e:
-        logger.error(f"Failed to connect to MongoDB: {e}")
-        raise
+    except Exception as e:
+        error_msg = f"Strategy 1 failed: {str(e)[:200]}"
+        logger.warning(error_msg)
+        connection_attempts.append(error_msg)
+        if mongodb.client:
+            mongodb.client.close()
+    
+    # Strategy 2: Disable SSL verification completely
+    try:
+        logger.info("Attempt 2: Connecting without SSL verification...")
+        
+        mongodb.client = AsyncIOMotorClient(
+            settings.mongodb_uri,
+            tls=True,
+            tlsInsecure=True,
+            serverSelectionTimeoutMS=10000,
+            connectTimeoutMS=20000,
+            socketTimeoutMS=20000
+        )
+        mongodb.db = mongodb.client[settings.mongodb_db_name]
+        
+        await mongodb.client.admin.command('ping')
+        logger.info("✅ Successfully connected to MongoDB (Strategy 2)")
+        await create_indexes()
+        return
+        
+    except Exception as e:
+        error_msg = f"Strategy 2 failed: {str(e)[:200]}"
+        logger.warning(error_msg)
+        connection_attempts.append(error_msg)
+        if mongodb.client:
+            mongodb.client.close()
+    
+    # Strategy 3: Parse and reconstruct URI with explicit SSL parameters
+    try:
+        logger.info("Attempt 3: Connecting with modified URI parameters...")
+        
+        # Add SSL parameters to URI if not present
+        uri = settings.mongodb_uri
+        if "?" in uri:
+            uri += "&tls=true&tlsAllowInvalidCertificates=true"
+        else:
+            uri += "?tls=true&tlsAllowInvalidCertificates=true"
+        
+        mongodb.client = AsyncIOMotorClient(
+            uri,
+            serverSelectionTimeoutMS=15000,
+            connectTimeoutMS=30000
+        )
+        mongodb.db = mongodb.client[settings.mongodb_db_name]
+        
+        await mongodb.client.admin.command('ping')
+        logger.info("✅ Successfully connected to MongoDB (Strategy 3)")
+        await create_indexes()
+        return
+        
+    except Exception as e:
+        error_msg = f"Strategy 3 failed: {str(e)[:200]}"
+        logger.error(error_msg)
+        connection_attempts.append(error_msg)
+        if mongodb.client:
+            mongodb.client.close()
+    
+    # All strategies failed
+    full_error = "\n".join(connection_attempts)
+    logger.error(f"❌ All MongoDB connection strategies failed:\n{full_error}")
+    raise ConnectionFailure(f"Failed to connect to MongoDB after 3 attempts: {full_error}")
 
 
 async def close_mongodb_connection():

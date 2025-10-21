@@ -84,21 +84,29 @@ async def startup_event():
     print("="*60)
     print(f"📝 API Docs: http://localhost:8000/docs")
     print(f"🔍 Health Check: http://localhost:8000/api/v1/health")
-    print(f"� Auth Endpoints: http://localhost:8000/api/v1/auth/")
+    print(f"🔐 Auth Endpoints: http://localhost:8000/api/v1/auth/")
     print(f"📄 Documents: http://localhost:8000/api/v1/documents/")
-    print(f"�💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
+    print(f"💬 Chat Endpoint: http://localhost:8000/api/v1/chat/query")
     print("="*60 + "\n")
     
-    # Connect to MongoDB
+    # Connect to MongoDB with retry logic
     print("🔌 Connecting to MongoDB...")
-    await connect_to_mongodb()
-    print("✅ MongoDB connected!\n")
+    try:
+        await connect_to_mongodb()
+        print("✅ MongoDB connected!\n")
+    except Exception as e:
+        print(f"⚠️  MongoDB connection failed: {str(e)[:100]}")
+        print("⚠️  Application will start but database features will be limited\n")
+        # Don't raise - allow app to start even if MongoDB fails
     
     # Initialize chatbot service on startup
     print("🔧 Initializing chatbot service...")
-    from app.services import chatbot_service
-    chatbot_service.initialize()
-    print("✅ Chatbot service ready!\n")
+    try:
+        from app.services import chatbot_service
+        chatbot_service.initialize()
+        print("✅ Chatbot service ready!\n")
+    except Exception as e:
+        print(f"⚠️  Chatbot initialization warning: {str(e)[:100]}\n")
 
 
 @app.on_event("shutdown")

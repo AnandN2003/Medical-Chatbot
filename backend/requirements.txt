@@ -11,6 +11,7 @@ python-multipart==0.0.20
 # MongoDB
 pymongo==4.15.3
 motor==3.7.1
+certifi>=2024.0.0  # SSL certificates for MongoDB connection
 
 # Authentication
 python-jose[cryptography]==3.5.0
