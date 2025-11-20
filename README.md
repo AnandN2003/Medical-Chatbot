@@ -1,2 +1,2 @@
 # Medical-Chatbot
-Built a Complete Medical Chatbot with LLMs, LangChain, Pinecone, Flask &amp; AWS
+Built a Complete Medical Chatbot with LLMs,LangChain, Pinecone, Flask &amp; AWS
