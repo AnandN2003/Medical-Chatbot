@@ -23,6 +23,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from ..core.embeddings import get_embedding_model
 from ..core.vector_store import add_documents_to_vectorstore
 from ..config import settings
+import asyncio
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,8 @@ async def process_document(
     temp_file_path = None
     
     try:
+        logger.info(f"📄 Starting document processing for document_id: {document_id}")
+        
         # Update status to processing
         await db.documents.update_one(
             {"_id": ObjectId(document_id)},
@@ -58,6 +62,7 @@ async def process_document(
                 }
             }
         )
+        logger.info(f"✅ Updated status to 'processing'")
         
         # Get document info
         document = await db.documents.find_one({"_id": ObjectId(document_id)})
@@ -84,6 +89,8 @@ async def process_document(
         logger.info(f"Created temporary file: {temp_file_path} (type: {file_type})")
         
         # Load document based on file type
+        logger.info(f"📖 Loading document with file type: {file_type}")
+        
         if file_type == "pdf":
             loader = PyPDFLoader(temp_file_path)
         elif file_type in ["docx", "doc"]:
@@ -95,19 +102,27 @@ async def process_document(
         else:
             raise ValueError(f"Unsupported file type: {file_type}")
         
-        # Load and split documents
-        documents = loader.load()
-        logger.info(f"Loaded {len(documents)} document chunks")
-        
+        logger.info(f"⏳ Loading document content... (this may take a while for large files)")
+
+        # Load and split documents in a thread to avoid blocking the event loop
+        start_load = time.time()
+        documents = await asyncio.to_thread(loader.load)
+        load_time = time.time() - start_load
+        logger.info(f"✅ Loaded {len(documents)} document pages/sections in {load_time:.2f}s")
+
         # Split documents into smaller chunks
+        logger.info(f"✂️ Splitting documents into chunks (size={settings.chunk_size}, overlap={settings.chunk_overlap})...")
+
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.chunk_size,
             chunk_overlap=settings.chunk_overlap,
             length_function=len,
         )
-        
-        chunks = text_splitter.split_documents(documents)
-        logger.info(f"Split into {len(chunks)} chunks")
+
+        start_split = time.time()
+        chunks = await asyncio.to_thread(text_splitter.split_documents, documents)
+        split_time = time.time() - start_split
+        logger.info(f"✅ Split into {len(chunks)} chunks in {split_time:.2f}s")
         
         # Add metadata to chunks
         for chunk in chunks:
@@ -120,14 +135,18 @@ async def process_document(
         
         # Create unique namespace for this user's documents
         namespace = f"user_{user_id}"
+        logger.info(f"👤 Using namespace: {namespace}")
         
         # Add to vector store (synchronous operation)
-        vector_store_ids = add_documents_to_vectorstore(
-            chunks,
-            namespace=namespace
-        )
-        
-        logger.info(f"Added {len(vector_store_ids)} chunks to vector store")
+        logger.info(f"🔄 Adding {len(chunks)} chunks to Pinecone vector store (namespace={namespace})...")
+        logger.info(f"⏳ This may take a few minutes depending on document size. Upload will run in a separate thread...")
+
+        # Offload Pinecone upload to a thread to avoid blocking the event loop
+        start_upload = time.time()
+        vector_store_ids = await asyncio.to_thread(add_documents_to_vectorstore, chunks, namespace)
+        upload_time = time.time() - start_upload
+
+        logger.info(f"✅ Successfully added {len(vector_store_ids)} chunks to vector store in namespace '{namespace}' in {upload_time:.1f}s")
         
         # Update document record
         await db.documents.update_one(

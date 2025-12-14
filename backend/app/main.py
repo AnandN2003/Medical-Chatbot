@@ -9,6 +9,11 @@ from app.api.routes import health, chat, auth, documents
 from app.config import settings
 from app.core.database import connect_to_mongodb, close_mongodb_connection
 import asyncio
+from app.core.embeddings import get_embedding_model
+import concurrent.futures
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -139,6 +144,15 @@ async def initialize_services():
         
         # Initialize chatbot service - SKIP FOR NOW to prevent crashes
         print("🔧 Chatbot service will initialize on first query (lazy loading)...")
+        # Preload embedding model in background to avoid long delays during first upload
+        try:
+            print("⏳ Preloading embedding model in background...")
+            # Run in a thread to avoid blocking the event loop
+            loop = asyncio.get_event_loop()
+            loop.create_task(asyncio.to_thread(get_embedding_model, settings.embedding_model))
+        except Exception as e:
+            logger.error(f"Failed to start embedding preloading: {e}")
+            logger.debug(e, exc_info=True)
         print("="*60)
         print("✅✅✅ BACKGROUND INITIALIZATION COMPLETE! ✅✅✅")
         print("✅ App is fully operational and ready to accept requests")

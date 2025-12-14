@@ -19,8 +19,39 @@ from ...core.auth import get_current_user
 from ...core.database import get_database
 from ...config import settings
 from ...services.document_service import process_document
+import logging
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
+logger = logging.getLogger(__name__)
+
+
+async def process_document_background(document_id: str, gridfs_id: str, user_id: str, db):
+    """
+    Process document in the background without blocking the upload response.
+    Handles errors and updates document status accordingly.
+    """
+    try:
+        logger.info(f"🔄 Starting background processing for document {document_id}")
+        await process_document(document_id, gridfs_id, user_id, db)
+        logger.info(f"✅ Successfully processed document {document_id}")
+    except Exception as e:
+        logger.error(f"❌ Error processing document {document_id}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
+        # Update document status with error
+        try:
+            await db.documents.update_one(
+                {"_id": ObjectId(document_id)},
+                {
+                    "$set": {
+                        "processing_status": "failed",
+                        "processing_error": str(e)
+                    }
+                }
+            )
+        except Exception as update_error:
+            logger.error(f"Failed to update document status: {str(update_error)}")
 
 
 @router.post("/upload", response_model=List[DocumentResponse], status_code=status.HTTP_201_CREATED)
@@ -118,20 +149,14 @@ async def upload_document(
         result = await db.documents.insert_one(document_dict)
         document_dict["_id"] = result.inserted_id
         
-        # Start document processing asynchronously
-        try:
-            await process_document(str(result.inserted_id), str(gridfs_id), str(current_user.id), db)
-        except Exception as e:
-            # If processing fails, update document status
-            await db.documents.update_one(
-                {"_id": result.inserted_id},
-                {
-                    "$set": {
-                        "processing_status": "failed",
-                        "processing_error": str(e)
-                    }
-                }
-            )
+        # Start document processing in the background (non-blocking)
+        import asyncio
+        asyncio.create_task(process_document_background(
+            str(result.inserted_id), 
+            str(gridfs_id), 
+            str(current_user.id), 
+            db
+        ))
         
         # Add to response list
         uploaded_documents.append(

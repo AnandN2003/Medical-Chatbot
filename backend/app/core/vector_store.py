@@ -7,6 +7,12 @@ from typing import List, Optional
 from langchain.schema import Document
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone, ServerlessSpec
+import concurrent.futures
+import traceback
+import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class PineconeManager:
@@ -38,21 +44,55 @@ class PineconeManager:
         """
         print(f"📌 Setting up Pinecone index: {self.index_name}...")
         
-        # Get list of existing indexes
-        existing_indexes = [index.name for index in self.pc.list_indexes()]
-        
+        # Get list of existing indexes (wrapped with a timeout to avoid hanging)
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(self.pc.list_indexes)
+                existing_indexes = future.result(timeout=30)
+                # Normalize returned structure if necessary
+                if existing_indexes and isinstance(existing_indexes[0], dict) and 'name' in existing_indexes[0]:
+                    existing_indexes = [idx['name'] for idx in existing_indexes]
+                elif existing_indexes and isinstance(existing_indexes[0], str):
+                    existing_indexes = existing_indexes
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout while listing Pinecone indexes (30s).")
+            raise
+        except Exception as e:
+            logger.error(f"Error listing Pinecone indexes: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+
         if self.index_name not in existing_indexes:
-            print(f"   Creating new index with dimension={dimension}")
-            self.pc.create_index(
-                name=self.index_name,
-                dimension=dimension,
-                metric=metric,
-                spec=ServerlessSpec(cloud=cloud, region=region)
-            )
+            logger.info(f"Creating new index with dimension={dimension}")
+            try:
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(
+                        self.pc.create_index,
+                        name=self.index_name,
+                        dimension=dimension,
+                        metric=metric,
+                        spec=ServerlessSpec(cloud=cloud, region=region)
+                    )
+                    future.result(timeout=60)
+            except concurrent.futures.TimeoutError:
+                logger.error("Timeout while creating Pinecone index (60s).")
+                raise
+            except Exception as e:
+                logger.error(f"Error creating Pinecone index: {str(e)}")
+                logger.debug(traceback.format_exc())
+                raise
         else:
-            print(f"   Index '{self.index_name}' already exists")
-        
-        self.index = self.pc.Index(self.index_name)
+            logger.info(f"Index '{self.index_name}' already exists")
+
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(self.pc.Index, self.index_name)
+                self.index = future.result(timeout=30)
+        except Exception as e:
+            logger.error(f"Error obtaining Pinecone index object: {str(e)}")
+            logger.debug(traceback.format_exc())
+            raise
+
         return self.index
     
     def get_index(self):
@@ -74,8 +114,18 @@ class PineconeManager:
             Dictionary with index statistics
         """
         index = self.get_index()
-        stats = index.describe_index_stats()
-        return stats
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(index.describe_index_stats)
+                stats = future.result(timeout=30)
+                return stats
+        except concurrent.futures.TimeoutError:
+            logger.error("Timeout while describing Pinecone index stats (30s). Returning empty stats.")
+            return {}
+        except Exception as e:
+            logger.error(f"Error describing index stats: {str(e)}")
+            logger.debug(traceback.format_exc())
+            return {}
     
     def get_vector_count(self) -> int:
         """
@@ -230,28 +280,43 @@ def add_documents_to_vectorstore(documents: List[Document], namespace: str = "de
     
     # Initialize manager if not already done
     if _global_manager is None:
-        _global_manager = PineconeManager(
-            api_key=settings.pinecone_api_key,
-            index_name=settings.pinecone_index_name
-        )
-        # Ensure index exists
-        _global_manager.create_index(
-            dimension=settings.pinecone_dimension,
-            metric=settings.pinecone_metric,
-            cloud=settings.pinecone_cloud,
-            region=settings.pinecone_region
-        )
-    
+        try:
+            _global_manager = PineconeManager(
+                api_key=settings.pinecone_api_key,
+                index_name=settings.pinecone_index_name
+            )
+            # Ensure index exists
+            _global_manager.create_index(
+                dimension=settings.pinecone_dimension,
+                metric=settings.pinecone_metric,
+                cloud=settings.pinecone_cloud,
+                region=settings.pinecone_region
+            )
+        except Exception as e:
+            logger.error(f"Failed to create or verify Pinecone manager/index: {e}")
+            logger.debug(traceback.format_exc())
+            raise
+
     # Get embedding model
-    embedding = get_embedding_model(settings.embedding_model)
-    
+    try:
+        embedding = get_embedding_model(settings.embedding_model)
+    except Exception as e:
+        logger.error(f"Failed to initialize embedding model: {e}")
+        logger.debug(traceback.format_exc())
+        raise
+
     # Always upload documents with the namespace
     # setup_vector_store will handle uploading them to the correct namespace
-    vector_store = _global_manager.setup_vector_store(
-        embedding=embedding, 
-        documents=documents,  # Pass documents to upload
-        namespace=namespace
-    )
+    try:
+        vector_store = _global_manager.setup_vector_store(
+            embedding=embedding,
+            documents=documents,  # Pass documents to upload
+            namespace=namespace
+        )
+    except Exception as e:
+        logger.error(f"Failed during setup_vector_store: {e}")
+        logger.debug(traceback.format_exc())
+        raise
     
     print(f"✅ Documents added to namespace: {namespace}")
     
